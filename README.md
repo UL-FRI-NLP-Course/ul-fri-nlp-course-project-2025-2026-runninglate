@@ -1,5 +1,3 @@
-# Natural language processing course: `Put name of your project here`
+# Natural language processing course: `Translation assistent for medical terminology `
 
-we are always running late
-
-Please, organize README and the whole structure of the repository to be self-contained and reproducible.
+Translate assitent to help translate medical terminology between english and slovenian.
