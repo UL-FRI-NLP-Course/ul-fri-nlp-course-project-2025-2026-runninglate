@@ -56,7 +56,9 @@
 %----------------------------------------------------------------------------------------
 
 \Abstract{
-The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here.
+
+	For this project we are going to create an AI tranlsation assistent, that will be able to translate between Slovenian and English. We will use the T5 transformer architecture, which is a state-of-the-art model for natural language processing tasks. We will train the model on a large dataset of parallel sentences in Slovenian and English, and we will evaluate its performance on a test set of sentences that it has not seen before. We will also compare our model's performance to other translation models, such as Google Translate and DeepL. The model focuses on medical terminology.
+
 }
 
 %----------------------------------------------------------------------------------------
@@ -77,15 +79,34 @@ The abstract goes here. The abstract goes here. The abstract goes here. The abst
 %----------------------------------------------------------------------------------------
 
 \section*{Introduction}
-	For this project we are going to create an AI tranlsation assistent, that will be able to translate between Slovenian and English. We will use the T5 transformer architecture, which is a state-of-the-art model for natural language processing tasks. We will train the model on a large dataset of parallel sentences in Slovenian and English, and we will evaluate its performance on a test set of sentences that it has not seen before. We will also compare our model's performance to other translation models, such as Google Translate and DeepL. The model focuses on medical terminology.
 
+Accurate translation in specialized fields like medicine is difficult, especially when using general machine translation tools. While systems like Google Translate or large language models can produce fluent text, they often make mistakes with medical terminology or use inconsistent translations. This is a problem because in medical contexts, correct terminology is very important. 
+
+In recent years, new approaches such as Retrieval-Augmented Generation (RAG) have been proposed to improve this. RAG combines information retrieval with text generation: instead of translating only based on the model, it first retrieves relevant documents and then uses them to produce a more accurate and grounded output.  
+
+There are also many existing tools and frameworks for language processing, such as NLTK or spaCy, but they are general-purpose and do not focus on domain-specific translation.  
+
+For this project, we focus on the medical domain and translation from English into Greek. We use resources from the CLARIN infrastructure, which provides access to many language corpora and tools for research.  
+
+The main corpus used is the EMEA corpus, which contains medical texts from the European Medicines Agency and is suitable for extracting domain-specific terminology and context. In addition, we use another CLARIN corpus (ECDC) to increase the amount of available data. For terminology grounding, we use a medical glossary, which includes English–Greek medical terms and helps ensure consistent translation. Such terminological resources are important because they standardize medical vocabulary and improve translation quality.  
+
+The goal of this project is to build a translation assistant that produces more accurate and consistent medical translations by combining retrieved medical texts with glossary-based terminology
 %------------------------------------------------
 
 \section*{Methods}
 
-Use the Methods section to describe what you did an how you did it -- in what way did you prepare the data, what algorithms did you use, how did you test various solutions ... Provide all the required details for a reproduction of your work.
+Our proposed corpora are Greek medical corpora: 
 
-Below are \LaTeX examples of some common elements that you will probably need when writing your report (e.g. figures, equations, lists, code examples ...).
+Corpora: 
+
+https://inventory.clarin.gr/corpus/747  
+
+https://inventory.clarin.gr/corpus/729 
+
+Glossary of medical term: 
+
+https://inventory.clarin.gr/lcr/517 
+
 
 
 \subsection*{Equations}
