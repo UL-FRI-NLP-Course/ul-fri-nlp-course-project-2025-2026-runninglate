@@ -1,3 +1,3 @@
-# Natural language processing course: `Translation assistent for medical terminology `
+# Natural language processing course: `Translation assistent for legal terminology`
 
-Translate assitent to help translate medical terminology between english and slovenian.
+Translation assitant to help translate legal terminology between english and slovenian.
