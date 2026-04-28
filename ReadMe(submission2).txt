@@ -12,6 +12,7 @@ Progress so far:
 -It scored 36.17 on the BLEU score, which clearly shows that
  there's space for improvement.
 
+Link to the Google Colab Notebook: https://colab.research.google.com/drive/1WZ29Dq1oOFWCtlmHFMygo4PA-74L7Di_?usp=sharing
 
 Files added:
 - dgt_all.csv - the .csv file with ENG-SLO pairs
