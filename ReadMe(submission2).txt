@@ -1,5 +1,3 @@
-# Natural language processing course: `Translation assistant for legal terminology`
-
 ReadMe (submission 2)
 This project aims to improve legal text translation, using the Facebook NLLB-2000 translation model and  RAG.
 
