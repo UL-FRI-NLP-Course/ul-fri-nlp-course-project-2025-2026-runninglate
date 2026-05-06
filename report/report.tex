@@ -38,16 +38,16 @@
 %\Archive{Final report} 
 
 % Article title
-\PaperTitle{Natural language processing course Latex Template} 
+\PaperTitle{Translation assistant for legal terminology} 
 
 % Authors (student competitors) and their info
 \Authors{Romina Mihalič, Anakhita Khademipur, Maša Pipan, Luka Škoda}
 
 % Advisors
-\affiliation{\textit{Advisors: Slavko Žitnik}}
+\affiliation{\textit{Advisors: Aleš Žagar}}
 
 % Keywords
-\Keywords{translation, slovenian, english, terminology}
+\Keywords{translation, Slovenian, English, terminology}
 \newcommand{\keywordname}{Keywords}
 
 
@@ -57,7 +57,7 @@
 
 \Abstract{
 
-	For this project we are going to create an AI tranlsation assistent, that will be able to translate between Slovenian and English. We will use the T5 transformer architecture, which is a state-of-the-art model for natural language processing tasks. We will train the model on a large dataset of parallel sentences in Slovenian and English, and we will evaluate its performance on a test set of sentences that it has not seen before. We will also compare our model's performance to other translation models, such as Google Translate and DeepL. The model focuses on medical terminology.
+	For this project we are going to create an AI tranlsation assistant, that will be able to translate between Slovenian and English. We will use the T5 transformer architecture, which is a state-of-the-art model for natural language processing tasks. We will train the model on a large dataset of parallel sentences in Slovenian and English, and we will evaluate its performance on a test set of sentences that it has not seen before. We will also compare our model's performance to other translation models, such as Google Translate and DeepL. The model focuses on legal terminology.
 
 }
 
@@ -80,172 +80,40 @@
 
 \section*{Introduction}
 
-Accurate translation in specialized fields like medicine is difficult, especially when using general machine translation tools. While systems like Google Translate or large language models can produce fluent text, they often make mistakes with medical terminology or use inconsistent translations. This is a problem because in medical contexts, correct terminology is very important. 
+Accurate translation in specialized domains such as legal and administrative texts is difficult, especially when using general machine translation tools. While systems like Google Translate or large language models can produce fluent text, they often make mistakes with domain-specific terminology or use inconsistent translations. This is not ideal because in institutional contexts precise and standardized terminology is key for clarity and correctness. 
+
+Since the introduction of the Transformer architecture, Transformer models have revolutionized the field of machine translation and have replaced older models, such as CNNs and RNNs that process data word by word, unlike Transformer models that work with the text as a whole. Some recently released large language models such as Llama and Gemma adapt this concept and provide more flexible and context-aware text generation, nonetheless domain-specific translation is still difficult because of a lack of consistent terminology and factual accuracy. 
 
 In recent years, new approaches such as Retrieval-Augmented Generation (RAG) have been proposed to improve this. RAG combines information retrieval with text generation: instead of translating only based on the model, it first retrieves relevant documents and then uses them to produce a more accurate and grounded output.  
 
 There are also many existing tools and frameworks for language processing, such as NLTK or spaCy, but they are general-purpose and do not focus on domain-specific translation.  
 
-For this project, we focus on the medical domain and translation from English into Greek. We use resources from the CLARIN infrastructure, which provides access to many language corpora and tools for research.  
+For this project, we focus on the institutional and administrative domain and translation from English into Slovenian. The main corpus used is the DGT Translation Memory, which contains officially translated documents from the European Commission. These texts include high-quality legal, administrative and policy-related parallel data in 24 official EU languages, including English and Slovenian, and are suitable for extracting domain-specific terminology and context and improving translation quality.  
 
-The main corpus used is the EMEA corpus, which contains medical texts from the European Medicines Agency and is suitable for extracting domain-specific terminology and context. In addition, we use another CLARIN corpus (ECDC) to increase the amount of available data. For terminology grounding, we use a medical glossary, which includes English–Greek medical terms and helps ensure consistent translation. Such terminological resources are important because they standardize medical vocabulary and improve translation quality.  
-
-The goal of this project is to build a translation assistant that produces more accurate and consistent medical translations by combining retrieved medical texts with glossary-based terminology
+The goal of this project is to build a translation assistant that produces more accurate and consistent legal translations based on retrieved institutional texts. 
 %------------------------------------------------
 
 \section*{Methods}
 
-Our proposed corpora are Greek medical corpora: 
+First of our proposed corpora is the DGT Translation Memory, which is a multilingual parallel corpus made out of .tmx documents from the European Commission Agency\cite{DGT_Translation_Memory}. For this project we will extract only the English and Slovenian segments. We will supplement this with aligned English-Slovenian texts from EUR-Lex, which includes EU treaties, regulations and directives\cite{EUR-Lex}. For terminology reference we will use the IATE - a bilingual glossary of legal and administrative terms\cite{IATE_-_Interactive_Terminology_for_Europe}. 
 
-Corpora: 
+\section*{Implementation}
+We constructed our dataset from the DGT Translation Memory, which contains parallel texts from European Union institutions. From this corpus, we extracted aligned English–Slovenian sentence pairs and converted them into a structured CSV file format for easier processing.
+Due to computational limitations, we did not use the full dataset. Instead, we randomly sampled a subset of 500 sentence pairs, which were used for translation and evaluation during this phase. Additionally, we created a separate test subset of 200 sentence pairs, which will be used later on unseen data.
 
-https://inventory.clarin.gr/corpus/747  
+The dataset consists of parallel sentences, where each English sentence is paired with its corresponding Slovenian translation. The Slovenian sentences serve as the reference (gold standard) for evaluation.
 
-https://inventory.clarin.gr/corpus/729 
+We implemented a baseline machine translation system using a pretrained transformer model. Instead of training a model from scratch, we used the NLLB-200 model (facebook/nllb-200-distilled-600M), which supports multilingual translation including English and Slovenian.
 
-Glossary of medical term: 
+The model and tokenizer were loaded using the HuggingFace Transformers library. We configured the source language as English (eng\_Latn) and the target language as Slovenian (slv\_Latn) to ensure correct translation direction.
 
-https://inventory.clarin.gr/lcr/517 
+To improve performance and reduce runtime, translations were processed in batches of eight sentences at a time. This batching strategy significantly speeds up inference compared to processing each sentence individually.
 
+\section*{Evaluation}
 
+For quantitative evaluation, we used the BLEU (Bilingual Evaluation Understudy) metric, implemented via the SacreBLEU library. BLEU measures the similarity between machine-generated translations and reference translations based on overlapping n-grams.
 
-\subsection*{Equations}
-
-You can write equations inline, e.g. $\cos\pi=-1$, $E = m \cdot c^2$ and $\alpha$, or you can include them as separate objects. The Bayes’s rule is stated mathematically as:
-
-\begin{equation}
-	P(A|B) = \frac{P(B|A)P(A)}{P(B)},
-	\label{eq:bayes}
-\end{equation}
-
-where $A$ and $B$ are some events. You can also reference it -- the equation \ref{eq:bayes} describes the Bayes's rule.
-
-\subsection*{Lists}
-
-We can insert numbered and bullet lists:
-
-% the [noitemsep] option makes the list more compact
-\begin{enumerate}[noitemsep] 
-	\item First item in the list.
-	\item Second item in the list.
-	\item Third item in the list.
-\end{enumerate}
-
-\begin{itemize}[noitemsep] 
-	\item First item in the list.
-	\item Second item in the list.
-	\item Third item in the list.
-\end{itemize}
-
-We can use the description environment to define or describe key terms and phrases.
-
-\begin{description}
-	\item[Word] What is a word?.
-	\item[Concept] What is a concept?
-	\item[Idea] What is an idea?
-\end{description}
-
-
-\subsection*{Random text}
-
-This text is inserted only to make this template look more like a proper report. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam blandit dictum facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam convallis tellus velit, quis ornare ipsum aliquam id. Maecenas tempus mauris sit amet libero elementum eleifend. Nulla nunc orci, consectetur non consequat ac, consequat non nisl. Aenean vitae dui nec ex fringilla malesuada. Proin elit libero, faucibus eget neque quis, condimentum laoreet urna. Etiam at nunc quis felis pulvinar dignissim. Phasellus turpis turpis, vestibulum eget imperdiet in, molestie eget neque. Curabitur quis ante sed nunc varius dictum non quis nisl. Donec nec lobortis velit. Ut cursus, libero efficitur dictum imperdiet, odio mi fermentum dui, id vulputate metus velit sit amet risus. Nulla vel volutpat elit. Mauris ex erat, pulvinar ac accumsan sit amet, ultrices sit amet turpis.
-
-Phasellus in ligula nunc. Vivamus sem lorem, malesuada sed pretium quis, varius convallis lectus. Quisque in risus nec lectus lobortis gravida non a sem. Quisque et vestibulum sem, vel mollis dolor. Nullam ante ex, scelerisque ac efficitur vel, rhoncus quis lectus. Pellentesque scelerisque efficitur purus in faucibus. Maecenas vestibulum vulputate nisl sed vestibulum. Nullam varius turpis in hendrerit posuere.
-
-
-\subsection*{Figures}
-
-You can insert figures that span over the whole page, or over just a single column. The first one, \figurename~\ref{fig:column}, is an example of a figure that spans only across one of the two columns in the report.
-
-\begin{figure}[ht]\centering
-	\includegraphics[width=\linewidth]{single_column.pdf}
-	\caption{\textbf{A random visualization.} This is an example of a figure that spans only across one of the two columns.}
-	\label{fig:column}
-\end{figure}
-
-On the other hand, \figurename~\ref{fig:whole} is an example of a figure that spans across the whole page (across both columns) of the report.
-
-% \begin{figure*} makes the figure take up the entire width of the page
-\begin{figure*}[ht]\centering 
-	\includegraphics[width=\linewidth]{whole_page.pdf}
-	\caption{\textbf{Visualization of a Bayesian hierarchical model.} This is an example of a figure that spans the whole width of the report.}
-	\label{fig:whole}
-\end{figure*}
-
-
-\subsection*{Tables}
-
-Use the table environment to insert tables.
-
-\begin{table}[hbt]
-	\caption{Table of grades.}
-	\centering
-	\begin{tabular}{l l | r}
-		\toprule
-		\multicolumn{2}{c}{Name} \\
-		\cmidrule(r){1-2}
-		First name & Last Name & Grade \\
-		\midrule
-		John & Doe & $7.5$ \\
-		Jane & Doe & $10$ \\
-		Mike & Smith & $8$ \\
-		\bottomrule
-	\end{tabular}
-	\label{tab:label}
-\end{table}
-
-
-\subsection*{Code examples}
-
-You can also insert short code examples. You can specify them manually, or insert a whole file with code. Please avoid inserting long code snippets, advisors will have access to your repositories and can take a look at your code there. If necessary, you can use this technique to insert code (or pseudo code) of short algorithms that are crucial for the understanding of the manuscript.
-
-\lstset{language=Python}
-\lstset{caption={Insert code directly from a file.}}
-\lstset{label={lst:code_file}}
-\lstinputlisting[language=Python]{code/example.py}
-
-\lstset{language=R}
-\lstset{caption={Write the code you want to insert.}}
-\lstset{label={lst:code_direct}}
-\begin{lstlisting}
-import(dplyr)
-import(ggplot)
-
-ggplot(diamonds,
-	   aes(x=carat, y=price, color=cut)) +
-  geom_point() +
-  geom_smooth()
-\end{lstlisting}
-
-%------------------------------------------------
-
-\section*{Results}
-
-Use the results section to present the final results of your work. Present the results in a objective and scientific fashion. Use visualisations to convey your results in a clear and efficient manner. When comparing results between various techniques use appropriate statistical methodology.
-
-\subsection*{More random text}
-
-This text is inserted only to make this template look more like a proper report. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam blandit dictum facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam convallis tellus velit, quis ornare ipsum aliquam id. Maecenas tempus mauris sit amet libero elementum eleifend. Nulla nunc orci, consectetur non consequat ac, consequat non nisl. Aenean vitae dui nec ex fringilla malesuada. Proin elit libero, faucibus eget neque quis, condimentum laoreet urna. Etiam at nunc quis felis pulvinar dignissim. Phasellus turpis turpis, vestibulum eget imperdiet in, molestie eget neque. Curabitur quis ante sed nunc varius dictum non quis nisl. Donec nec lobortis velit. Ut cursus, libero efficitur dictum imperdiet, odio mi fermentum dui, id vulputate metus velit sit amet risus. Nulla vel volutpat elit. Mauris ex erat, pulvinar ac accumsan sit amet, ultrices sit amet turpis.
-
-Phasellus in ligula nunc. Vivamus sem lorem, malesuada sed pretium quis, varius convallis lectus. Quisque in risus nec lectus lobortis gravida non a sem. Quisque et vestibulum sem, vel mollis dolor. Nullam ante ex, scelerisque ac efficitur vel, rhoncus quis lectus. Pellentesque scelerisque efficitur purus in faucibus. Maecenas vestibulum vulputate nisl sed vestibulum. Nullam varius turpis in hendrerit posuere.
-
-Nulla rhoncus tortor eget ipsum commodo lacinia sit amet eu urna. Cras maximus leo mauris, ac congue eros sollicitudin ac. Integer vel erat varius, scelerisque orci eu, tristique purus. Proin id leo quis ante pharetra suscipit et non magna. Morbi in volutpat erat. Vivamus sit amet libero eu lacus pulvinar pharetra sed at felis. Vivamus non nibh a orci viverra rhoncus sit amet ullamcorper sem. Ut nec tempor dui. Aliquam convallis vitae nisi ac volutpat. Nam accumsan, erat eget faucibus commodo, ligula dui cursus nisi, at laoreet odio augue id eros. Curabitur quis tellus eget nunc ornare auctor.
-
-
-%------------------------------------------------
-
-\section*{Discussion}
-
-Use the Discussion section to objectively evaluate your work, do not just put praise on everything you did, be critical and exposes flaws and weaknesses of your solution. You can also explain what you would do differently if you would be able to start again and what upgrades could be done on the project in the future.
-
-
-%------------------------------------------------
-
-\section*{Acknowledgments}
-
-Here you can thank other persons (advisors, colleagues ...) that contributed to the successful completion of your project.
-
-
+The model achieved a BLEU score of 36.17 on the sampled dataset. This result indicates that the model produces reasonably accurate translations, though there is still room for improvement, particularly in handling specialized legal terminology.
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
