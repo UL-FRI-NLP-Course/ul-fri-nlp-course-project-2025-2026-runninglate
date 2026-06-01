@@ -99,7 +99,7 @@ First of our proposed corpora is the DGT Translation Memory, which is a multilin
 
 \section*{Implementation}
 We constructed our dataset from the DGT Translation Memory, which contains parallel texts from European Union institutions. From this corpus, we extracted aligned English–Slovenian sentence pairs and converted them into a structured CSV file format for easier processing.
-Due to computational limitations, we did not use the full dataset. Instead, we randomly sampled a subset of 500 sentence pairs, which were used for translation and evaluation during this phase. Additionally, we created a separate test subset of 200 sentence pairs, which will be used later on unseen data.
+We randomly sampled a subset of 500 sentence pairs, which were used for translation and evaluation during this phase. Additionally, we created a separate test subset of 200 sentence pairs, which will be used later on unseen data.
 
 The dataset consists of parallel sentences, where each English sentence is paired with its corresponding Slovenian translation. The Slovenian sentences serve as the reference (gold standard) for evaluation.
 
@@ -109,11 +109,33 @@ The model and tokenizer were loaded using the HuggingFace Transformers library. 
 
 To improve performance and reduce runtime, translations were processed in batches of eight sentences at a time. This batching strategy significantly speeds up inference compared to processing each sentence individually.
 
+
+\section*{RAG}
+Retrieval-Augmented Generation (RAG) is a technique that connects Large Language Models (LLMs) to external knowledge sources. Instead of relying solely on information learned during training, a RAG system retrieves relevant information from a knowledge base and provides it to the model as additional context during inference. This approach can improve the factual accuracy of generated outputs and reduce hallucinations, where a model produces incorrect information, fabricated citations, or unsupported statements \cite{lewis2020rag, ibm_rag}.
+
+The retrieval corpus used by the RAG component was created from the training data used for the basic model.
+
+Since semantic retrieval relies on vector representations of text, all English sentences in the knowledge base were converted into embeddings using the multilingual SentenceTransformer model *paraphrase-multilingual-MiniLM-L12-v2*. These embeddings capture the semantic meaning of sentences, allowing semantically similar sentences to be identified even when they differ lexically.
+ 
+The sentence embeddings were indexed using FAISS (Facebook AI Similarity Search), a library designed for efficient similarity search in high-dimensional vector spaces. 
+Because semantic similarity was measured using cosine similarity, all embedding vectors were normalized to unit length before indexing. After normalization, cosine similarity becomes equivalent to the inner product between vectors, allowing FAISS's IndexFlatIP index to efficiently retrieve the most semantically similar sentences from the knowledge base.
+
+
+During translation, the input English sentence is first encoded into an embedding using the same SentenceTransformer model. The embedding is then used as a query to search the FAISS index for the most semantically similar sentence in the knowledge base. In our implementation, the single most similar example (\texttt{k=1}) is retrieved together with its corresponding Slovenian translation.
+
+The retrieved English–Slovenian sentence pair is inserted into the prompt as a translation example. The FLAN-T5 model then receives both the retrieved example and the new sentence to be translated. This provides the model with contextual guidance based on a similar previously seen translation before generating the final Slovenian output.
+
+
 \section*{Evaluation}
 
 For quantitative evaluation, we used the BLEU (Bilingual Evaluation Understudy) metric, implemented via the SacreBLEU library. BLEU measures the similarity between machine-generated translations and reference translations based on overlapping n-grams.
 
-The model achieved a BLEU score of 36.17 on the sampled dataset. This result indicates that the model produces reasonably accurate translations, though there is still room for improvement, particularly in handling specialized legal terminology.
+The baseline model achieved a BLEU score of 36.17 when using sampled data from the NLLB dataframe, which indicates good translation quality. The NLLB dataframe, consists in parallel text, specifically designed for translation, which explains the strong performance of the model. 
+When another more general dataframe is used like FLAN-T5 on the same translation model, the  BLUE score drops to 0.12, while the RAG-based model scores 23. 
+
+Overall, the results indicate that the model produces reasonably accurate translations with domain-specific training data, but drops with general-purpose models. There is still room for improvement, particularly in handling specialized legal terminology.
+
+
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
