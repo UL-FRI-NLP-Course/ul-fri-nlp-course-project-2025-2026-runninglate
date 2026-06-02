@@ -128,14 +128,16 @@ The retrieved English–Slovenian sentence pair is inserted into the prompt as a
 
 \section*{Evaluation}
 
+
 For quantitative evaluation, we used the BLEU (Bilingual Evaluation Understudy) metric, implemented via the SacreBLEU library. BLEU measures the similarity between machine-generated translations and reference translations based on overlapping n-grams.
+We also used the Character n-gram F-score (ChrF) metric, which measures similarity using character-level n-grams rather than word-level n-grams. As a result, it often aligns more closely with human judgment by recognizing partial matches and morphological variations that word-based metrics may overlook.
 
 The baseline model achieved a BLEU score of 36.17 when using sampled data from the NLLB dataframe, which indicates good translation quality. The NLLB dataframe, consists in parallel text, specifically designed for translation, which explains the strong performance of the model. 
-When another more general dataframe is used like FLAN-T5 on the same translation model, the  BLUE score drops to 0.12, while the RAG-based model scores 23. 
+When the more general-purpose FLAN-T5 model is used for the same translation task, the BLEU score drops to 0.12, whereas the RAG-based model achieves a BLEU score of 23.
 
-Overall, the results indicate that the model produces reasonably accurate translations with domain-specific training data, but drops with general-purpose models. There is still room for improvement, particularly in handling specialized legal terminology.
+Because BLEU is generally considered an older metric and can be overly sensitive to exact word matches, we additionally evaluated the baseline and RAG-based models on the FLAN-T5 dataset using only the ChrF metric. The baseline model achieved a ChrF score of 17.52, while the RAG-based model achieved a score of 41.88. These results suggest that the RAG-based approach produces translations that are considerably closer to the reference texts, even when exact word overlap is limited.
 
-
+Overall, the results indicate that the model produces reasonably accurate translations when trained and evaluated on domain-specific translation data, while performance decreases on more general-purpose datasets. However, the ChrF evaluation demonstrates that the RAG-based model retains a substantially higher degree of similarity to the reference translations than the baseline model. There is still room for improvement, particularly in handling specialized legal terminology.
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
