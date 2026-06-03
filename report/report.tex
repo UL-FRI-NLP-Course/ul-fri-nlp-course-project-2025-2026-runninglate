@@ -57,7 +57,7 @@
 
 \Abstract{
 
-	For this project we are going to create an AI tranlsation assistant, that will be able to translate between Slovenian and English. We will use the T5 transformer architecture, which is a state-of-the-art model for natural language processing tasks. We will train the model on a large dataset of parallel sentences in Slovenian and English, and we will evaluate its performance on a test set of sentences that it has not seen before. We will also compare our model's performance to other translation models, such as Google Translate and DeepL. The model focuses on legal terminology.
+	For this project we are going to create an AI tranlsation assistant, that will be able to translate between Slovenian and English. We will use the T5 transformer architecture, which is a state-of-the-art model for natural language processing tasks. We will train the model on a large dataset of parallel sentences in Slovenian and English, and we will evaluate its performance on a test set of sentences that it has not seen before. We will also enhance our base model with RAG and compare the performances of the two. The model focuses on legal terminology.
 
 }
 
@@ -128,16 +128,86 @@ The retrieved English–Slovenian sentence pair is inserted into the prompt as a
 
 \section*{Evaluation}
 
-
 For quantitative evaluation, we used the BLEU (Bilingual Evaluation Understudy) metric, implemented via the SacreBLEU library. BLEU measures the similarity between machine-generated translations and reference translations based on overlapping n-grams.
 We also used the Character n-gram F-score (ChrF) metric, which measures similarity using character-level n-grams rather than word-level n-grams. As a result, it often aligns more closely with human judgment by recognizing partial matches and morphological variations that word-based metrics may overlook.
+
 
 The baseline model achieved a BLEU score of 36.17 when using sampled data from the NLLB dataframe, which indicates good translation quality. The NLLB dataframe, consists in parallel text, specifically designed for translation, which explains the strong performance of the model. 
 When the more general-purpose FLAN-T5 model is used for the same translation task, the BLEU score drops to 0.12, whereas the RAG-based model achieves a BLEU score of 23.
 
+
 Because BLEU is generally considered an older metric and can be overly sensitive to exact word matches, we additionally evaluated the baseline and RAG-based models on the FLAN-T5 dataset using only the ChrF metric. The baseline model achieved a ChrF score of 17.52, while the RAG-based model achieved a score of 41.88. These results suggest that the RAG-based approach produces translations that are considerably closer to the reference texts, even when exact word overlap is limited.
 
+
+As for qualitative analysis, we took a small subset of our test set and manually checked for errors of RAG translations. Our subset consisted of 30 examples and we examined every 30th translation, starting with the translation with index number 0. The possible errors of RAG translation, compared to the Gold standard, were the following:
+
+\begin{itemize}
+    \item \textbf{Grammatical error} = the translation consisted of grammatical errors in Slovene language, such as lack of diacritics (č, š, ž) and wrong inclinations, etc. 
+    \item \textbf{No translation} = the RAG translation was the same as the source sentence
+    \item \textbf{Wrong target language} = the RAG translation involved partial or complete switching to another target language 
+    \item \textbf{Nonsensical output} =  severe generation failures where the produced RAG translation was not interpretable
+    \item \textbf{No major error} = the translation had no major flaws as/or it was the same as the Gold standard
+\end{itemize}
+
+
+Here are screenshoted examples of possible errors, taken from our Google Collab’s Notebook:
+
+\vspace{20}
+
+\begin{figure}[!h]
+    \textbf{No translation} \\
+    \includegraphics[width=\linewidth]{fig/no_translation.png}
+\end{figure}
+\vspace{10}
+
+\begin{figure}[!h]
+    \textbf{Wrong target language} \\
+    \includegraphics[width=\linewidth]{fig/wrong_targer.png}
+\end{figure}
+
+\vspace{10}
+
+\begin{figure}[!h]
+    \textbf{Nonsensical output} \\
+    \includegraphics[width=\linewidth]{fig/nonsensical_output.png}
+\end{figure}
+
+\vspace{10}
+
+\begin{figure}[!h]
+    \textbf{No major error} \\
+    \includegraphics[width=\linewidth]{fig/no major error.png}
+\end{figure}
+
+\vspace{10}
+
+\begin{figure}[!h]
+    \textbf{Grammatical error} \\
+    \includegraphics[width=\linewidth]{fig/grammatical_error.png}
+\end{figure}
+
+\begin{figure}[!h]   
+    \begin{tabular}{Error category | count |percentage}
+         \textbf{Error category} & \textbf{Count} & \textbf{Percentage} \\
+         Nonsensical output	& 11 & 36.7\% \\
+         Grammatical error &	9 &	30.0\% \\
+        No major error & 6 &	20.0\% \\
+        Wrong target language &	3	& 10.0\% \\
+        No translation &	1 &	3.3\% \\
+        Total &	30 &	100.0\%
+    \end{tabular}
+    \vspace{10}\newline
+    \caption{Table 1. Qualitative error analysis of 30 manually evaluated RAG translations.}
+\end{figure}
+
+\newline
+
+
+
+Out of the 30 manually evaluated examples, 11 were flagged as Nonsensical output, 1 as No translation, 9 as Grammatical error, 6 as No major error and 3 as Wrong target language. 
+
 Overall, the results indicate that the model produces reasonably accurate translations when trained and evaluated on domain-specific translation data, while performance decreases on more general-purpose datasets. However, the ChrF evaluation demonstrates that the RAG-based model retains a substantially higher degree of similarity to the reference translations than the baseline model. There is still room for improvement, particularly in handling specialized legal terminology.
+
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
